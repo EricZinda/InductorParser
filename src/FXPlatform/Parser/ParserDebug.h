@@ -3,9 +3,11 @@
 
 namespace FXPlat
 {
-    class ParserDebug
+	// Functions that are useful for debugging parsing
+	class ParserDebug
     {
     public:
+		// Make sure tree has a child in position level0Index that has a certain symbolID AND that that child matches the string toString
         static bool CheckTree(vector<shared_ptr<Symbol>> &tree, int level0Index, unsigned short symbolID, const string &toString)
         {
             string foo = PrintTree(tree);
@@ -24,6 +26,7 @@ namespace FXPlat
             return false;
         }
 
+		// Same as above but walks from root to child at index level0Index and then its child at level1Index
         static bool CheckTree(vector<shared_ptr<Symbol>> &tree, int level0Index, int level1Index, unsigned short symbolID, const string &toString)
         {
             string foo = PrintTree(tree);
@@ -46,6 +49,7 @@ namespace FXPlat
             return false;
         }
 
+		// Same as above, one level deeper
         static bool CheckTree(vector<shared_ptr<Symbol>> &tree, int level0Index, int level1Index, int level2Index, unsigned short symbolID, const string &toString)
         {
             string foo = PrintTree(tree);
@@ -70,6 +74,7 @@ namespace FXPlat
             return false;
         }
 
+		// Attempts to parse rule, has options whether the entire string should be consumed (requireEOF)
         template<class rule>
         static shared_ptr<Symbol> TestTryParse(string testString, int &deepestFailure, string &errorMessage, bool requireEOF = true)
         {
@@ -101,6 +106,7 @@ namespace FXPlat
             return symbol;
         }
 
+		// returns true if the flattened tree returns a single symbolID 
         static bool CheckFlattenedSingleSymbolResult(shared_ptr<Symbol> rule, unsigned short ID, const string &result, vector<shared_ptr<Symbol>> &flattenedTree)
         {
             if(rule == nullptr)

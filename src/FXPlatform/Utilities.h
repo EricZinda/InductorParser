@@ -4,6 +4,8 @@
 
 int ReplaceAll(std::string& str, const std::string& from, const std::string& to);
 
+
+// lexical_cast<type>(value) converts value into type if possible
 template<typename Target, typename Source>
 Target lexical_cast(Source arg, int precision=9)
 {
@@ -11,12 +13,7 @@ Target lexical_cast(Source arg, int precision=9)
     interpreter.setf( std::ios::fixed, std::ios::floatfield );
     interpreter.precision(precision);
     
-    Target result;
-//    if(!(interpreter << arg) ||
-//       !(interpreter >> result) ||
-//       !(interpreter >> std::ws).eof())
-//        throw std::runtime_error("bad lexical cast");
-    
+    Target result;    
     if(!(interpreter << arg))
     {
         throw std::runtime_error("bad lexical cast");
@@ -37,7 +34,6 @@ Target lexical_cast(Source arg, int precision=9)
 
 template<>
 std::string lexical_cast<std::string>(const char arg, int precision);
-
 // specialize for string to handle the case where the string is empty
 template<>
 std::string lexical_cast<std::string>(const char *arg, int precision);
@@ -46,7 +42,8 @@ std::string lexical_cast<std::string>(char *arg, int precision);
 template<>
 std::string lexical_cast<std::string>(const std::string arg, int precision);
 
-
+// These are all here just to save time writing the same code over and over which 
+// turns member variables into properties that just set and get them
 #define UniquePtrArrayProperty(access, type, name) \
     public:\
     void name(unique_ptr<type []> value)       \

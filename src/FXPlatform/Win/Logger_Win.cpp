@@ -9,6 +9,7 @@
 #include "Logger.h"
 #include "Windows.h"
 
+// Implementation of debug output on windows
 void DebugLogMessage(int traceType, const TraceDetail levelOfDetail, const char *message)
 {
 	OutputDebugString(message);

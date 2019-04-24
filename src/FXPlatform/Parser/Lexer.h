@@ -7,17 +7,19 @@ namespace FXPlat
     class LexerReader;
     class Symbol;
 
-    class LexerTransaction
-    {
-    public:
-        LexerTransaction(int depth) : m_depth(depth) {}
-        ValueProperty(public, int, depth);
-        typedef std::list<std::shared_ptr<Symbol> > SymbolsType;
-        Property(public, SymbolsType, symbols);
-    };
-
-    // This is a PEG (Parsing Expression Grammar) parser
-    class Lexer
+	// This is a PEG (Parsing Expression Grammar) parser
+    // The Lexer's job is to allow the parser to grab a character at a time
+	// from the stream that is opened via Open().  The parser then can combine
+	// them into larger symbols based on the parser's rules.
+	//
+	// The parser actually uses LexerReader (which wraps Lexer) because LexerReader 
+	// automatically handles putting tokens back into the Lexer if they aren't consumed.
+	// See comments there for more details.
+	//
+	// Lexer also allows the parser to record rules that fail, and keeps the one that went
+	// deepest into the tree. That's because the deepest failure is, surprisingly often,
+	// the actual error in the document being parsed. Thus, that's the error returned.
+	class Lexer
     {
     public:
         friend LexerReader;
@@ -37,6 +39,9 @@ namespace FXPlat
         std::shared_ptr<std::istream> stream() { return m_stream; }
         
     private:
+		// Used by LexerReader to create transactions when symbols are consumed
+		// Aborting them puts the symbols back into the Lexer so the next rule can try
+		// to consume them.
         void AbortTransaction(long position);
         long BeginTransaction();
         void CommitTransaction(long position);

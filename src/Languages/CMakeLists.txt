@@ -5,6 +5,5 @@ target_sources(parser
         HtmlParser.h
         HtmlParser.cpp
         XmlCompiler.h
-        XmlCompiler.cpp
 )
 target_include_directories(parser PRIVATE ./)

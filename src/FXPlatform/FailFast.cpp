@@ -1,5 +1,5 @@
 #include "FailFast.h"
- #include "NanoTrace.h"
+#include "NanoTrace.h"
 #include <string>
 using namespace std;
 

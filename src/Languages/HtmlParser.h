@@ -2,29 +2,10 @@
 #include "CssParser.h"
 using namespace FXPlat;
 
+// Background used to generate this:
 // http://software.hixie.ch/utilities/js/live-dom-viewer/
 // https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html
 // http://www.w3.org/TR/html-markup/syntax.html#void-element
-// DocType:
-//    normal doctype
-//    deprecated doctype
-//    legacy-tool-compatible doctype
-    
-// Attributes:
-//    empty attribute syntax
-//    unquoted attribute-value syntax
-//    single-quoted attribute-value syntax
-//    double-quoted attribute-value syntax
-
-// Character Data:
-//    normal character data
-//    replaceable character data
-//    non-replaceable character data
-
-// Character References
-//    named character references
-//    decimal numeric character references
-//    hexadecimal numeric character references
 
 namespace Html
 {
@@ -64,31 +45,7 @@ namespace Html
         SymbolDef(nonReplaceableTextElement, CssSymbolIDEnd + 10);
         SymbolDef(processingInstruction, CssSymbolIDEnd + 11);
     };
-#define HtmlSymbolIDEnd (CssSymbolIDEnd + 1000)
-    
-    //character references are a form of markup for representing single individual characters. There are three types of character references:
-    //    named character references
-    //    decimal numeric character references
-    //    hexadecimal numeric character references
-
-    // Named Character Reference
-    // Named character references consist of the following parts in exactly the following order:
-    //    An "&" character.
-    //    One of the names listed in the “Named character references” section of the HTML5 specification [HTML5], using the same case.
-    //    A ";" character.
-
-    //Decimal numerical character references consist of the following parts, in exactly the following order.
-    //An "&" character.
-    //A "#" character.
-    //One or more digits in the range 0–9, representing a base-ten integer that itself is a Unicode code point that is not U+0000, U+000D, in the range U+0080–U+009F, or in the range 0xD8000–0xDFFF (surrogates).
-    //A ";" character.
-
-    //Hexadecimal numeric character references consist of the following parts, in exactly the following order.
-    //An "&" character.
-    //A "#" character.
-    //Either a "x" character or a "X" character.
-    //One or more digits in the range 0–9, a–f, and A–F, representing a base-sixteen integer that itself is a Unicode code point that is not U+0000, U+000D, in the range U+0080–U+009F, or in the range 0xD800–0xDFFF (surrogates).
-    //A ";" character.
+	#define HtmlSymbolIDEnd (CssSymbolIDEnd + 1000)
     
     // Tag names are used within element start tags and end tags to give the element’s name. HTML elements all have 
     // names that only use characters in the range 0–9, a–z, and A–Z.
@@ -145,7 +102,6 @@ namespace Html
             >,
             FlattenType::None, HtmlSymbolID::attribute
         > UnquotedAttributeValueAttributeRule;
-
 
     //single-quoted attribute-value syntax
     //A single-quoted attribute value is specified by providing the following parts in exactly the following order:
@@ -404,9 +360,9 @@ namespace Html
     Void elements only have a start tag; end tags must not be specified for void elements.
     The start and end tags of certain elements can be omitted. The subsection for each element in the HTML elements section of this reference provides information about which tags (if any) can be omitted for that particular element.
     A non-void element must have an end tag, unless the subsection for that element in the HTML elements section of this reference indicates that its end tag can be omitted.
-    The contents of an element must be placed between just after its start tag (which might be implied, in certain cases) and just before its end tag (which might be implied in certain cases).*/
-    // In documents in the HTML syntax, the title and textarea elements can contain replaceable character data.
-    // In documents in the HTML syntax, the script, and style elements can contain non-replaceable character data
+    The contents of an element must be placed between just after its start tag (which might be implied, in certain cases) and just before its end tag (which might be implied in certain cases).
+    In documents in the HTML syntax, the title and textarea elements can contain replaceable character data.
+    In documents in the HTML syntax, the script, and style elements can contain non-replaceable character data */
 
     // Element
     // Element ::= ReplaceableCharacterNode | NonReplaceableCharacterNode | NormalCharacterElementRule | CommentNode

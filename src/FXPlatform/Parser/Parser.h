@@ -6,26 +6,40 @@
 #include <vector>
 #include <algorithm>
 
+//
 /*
- How to use:
- 
- The goal is to parse a string into a tree of Symbols.
- All rules that parse anything have a TryParse() function that returns a Symbol if success or null if failure.
-    They read characters from the Lexer in a (potentially nexted) transaction.
+ This is a PEG (Parsing Expression Grammar) parser.  
+
+ Summary: The goal is to parse a string into a tree of Symbol objects using a tree of rules. The
+ tree of rules is written by the developer to parse a particular format of document. The parser 
+ visits each node of the tree and allows it to consume characters from the string as it tries to
+ match the rule's pattern. If a rule doesn't match, the parser backtracks and tries other branches of the tree until it gets to the end of
+ document with a successful rule (or fails).
+
+ A rule is any object derived from Symbol that has the following method on it:
+	static shared_ptr<Symbol> TryParse(shared_ptr<Lexer> lexer, const string &errorMessage)
+that returns a Symbol if success or null if failure.
+    They read characters from the Lexer in a (potentially nested) transaction.
         If they succeed, they "commit" the transaction which means they "consume" the characters, removing them from the string so that other rules can't see them
         If they fail, the transaction rolls back which allows something else to see them
     They can call nested rules which contain their own transactions.
     Only when the outermost transaction is committed is the string consumed
- The rules are all templates which have some settings:
+	Rules form a tree, with a single rule at the root that is followed to interpret a document. 
+
+The rules are all written using C++ Templates so that they end up forming a "Domain Specific Language"
+which makes it easier to read and write the rules.  It obviously makes it harder to debug compile errors though.
+
+Each of the rule templates have some standard arguments that can be tweaked when they are used:
     - most allow you to specify the ID of the symbol returned on success
     - most allow you to control "flattening" which controls what the tree looks like:
         - Flatten means take this symbol out of the tree and reparent its children to its parent
+			Useful for things you really don't care about when you are interpreting the tree later like the < and >
+			in an XML document. Useful for processing, but only care about what is in them.
         - Delete means remove this symbol and all children completely
- The symbol returned has an ID .
- If a character is consumed, the next rule run can't see the characters
- 
- 
- 
+			Whitespaces is a good example of this. 
+	- most have an error string that is used if this rule happens to be the deepest rule that fails.  It is the error
+		that will be returned to the user as the "parser error"
+  
  */
  namespace FXPlat
 {
@@ -105,10 +119,10 @@
         SymbolDef(floatExpression, 274);
     };
 
-    //    Allow you to control "flattening" which controls what the tree looks like if the node is successful:
-    //    - Flatten means take this symbol out of the tree and reparent its children to its parent (which is useful for nodes that are there for mechanics, not the meaning of the parse tree)
-    //    - Delete means remove this symbol and all children completely (which you might want to do for a comment)
-    //    - None means leave this node in the tree (for when the node is meaningful)
+    // Allow you to control "flattening" which controls what the tree looks like if the node is successful:
+    //  - Flatten means take this symbol out of the tree and reparent its children to its parent (which is useful for nodes that are there for mechanics, not the meaning of the parse tree)
+    //  - Delete means remove this symbol and all children completely (which you might want to do for a comment)
+    //  - None means leave this node in the tree (for when the node is meaningful like a name of something)
     enum class FlattenType
     {
         None,
@@ -122,6 +136,7 @@
     #define Spaces() \
         string((size_t) (lexer->TransactionDepth() * 3), ' ')
 
+	// This is the base class that is used by all the rules and the primary thing the rules (and thus the Parser) generate
     class Symbol : public enable_shared_from_this<Symbol>
     {
     public:
@@ -151,8 +166,6 @@
                          FailFastAssert(symbol != nullptr);
                          this->m_subSymbols.push_back(symbol);
                      });
-            
-            // m_subSymbols.insert(m_subSymbols.end(), begin, end);
         }
 
         virtual void AddToStream(stringstream &stream) 
@@ -164,7 +177,6 @@
                 });
         }
         
-        // Make sure this can't be changed.  Only changes should be from additions via 
         const vector<shared_ptr<Symbol> > &children()
         {
             return m_subSymbols;
@@ -221,11 +233,14 @@
 
     protected:
         FlattenType m_flattenType;
+		// SymbolID needs to be a number that is unique for the entire parser
+		// so that you know what got generated later
         unsigned short m_symbolID;
         vector<shared_ptr<Symbol> > m_subSymbols;
     };
 
-
+	// Symbols returned by the Lexer are simple characters (except for EOF) and will
+	// be of this class
     class LexerSymbol : public Symbol
     {
     public:
@@ -245,6 +260,7 @@
         }
     };
 
+	// Matches a single character. The SymbolID used is the ascii value of the character.
     template<char *character, FlattenType flatten = FlattenType::Delete, char *staticErrorMessage = DefaultErrorMessage>
     class CharacterSymbol : public Symbol
     {
@@ -286,6 +302,7 @@
         }
     };
 
+	// Matches the end of a document. The SymbolID used is SymbolID::eof.
     class EofSymbol : public Symbol
     {
     public:
@@ -322,6 +339,7 @@
         static shared_ptr<Symbol> defaultValue;
     };
 
+	// Matches any single character *except* the disallowedCharacters. The SymbolID used is the ascii value of the character.
     template<char *disallowedCharacters, FlattenType flatten = FlattenType::None, char *staticErrorMessage = DefaultErrorMessage>
     class CharacterSetExceptSymbol : public CharacterSymbol<NullString, flatten, staticErrorMessage>
     {
@@ -355,6 +373,7 @@
         }
     };
 
+	// Matches any single character in the set specified by allowedCharacters. The SymbolID used is the ascii value of the character.
     template<char *allowedCharacters, FlattenType flatten = FlattenType::None, char *staticErrorMessage = DefaultErrorMessage>
     class CharacterSetSymbol : public CharacterSymbol<NullString, flatten, staticErrorMessage>
     {
@@ -388,12 +407,15 @@
         }
     };
 
+	// Some typical character sets that are used often
     typedef CharacterSetSymbol<Chars> CharSymbol;
     typedef CharacterSetSymbol<MathString> MathSymbol;
     typedef CharacterSetSymbol<CharsAndNumbers> CharOrNumberSymbol;
     typedef CharacterSetSymbol<Numbers> NumberSymbol;
     typedef CharacterSetSymbol<HexNumbers> HexNumberSymbol;
+	typedef CharacterSetSymbol<WhitespaceChars> WhitespaceCharSymbol;
 
+	// Matches a specific string of characters.
     template<char *literalString, FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::literalExpression, char *staticErrorMessage = DefaultErrorMessage>
     class LiteralExpression : public Symbol
     {
@@ -444,7 +466,12 @@
         }
     };
 
-    // Any sequence of characters (including zero) including any that nest blocks except the final unmatched endBlockChar
+	// Used when you want to match *everything* (including delimiters and including zero characters) that appears within a block delimited by characters like (). Will
+	// stop when it finds an unmatched right delimiter. Allows parsing of string like "(foo(bar))", if you want to match everything inside
+	// the outer () in a single token even if it includes more of the delimiters (as long as they are matched). Example of use:
+	//		CharacterSymbol<LeftParenthesisString, FlattenType::Delete, errExpectedParenthesis>,
+	//		NotUnmatchedBlockExpression<LeftParenthesisString, RightParenthesisString, FlattenType::None, StoreObjectSymbolID::initialValue>,
+	//		CharacterSymbol<RightParenthesisString, FlattenType::Delete, errExpectedParenthesis>,
     // Only supports single character blocks like () [] {}
     template<char *startBlockChar, char *endBlockChar, FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::notUnmatchedBlockExpression, char *staticErrorMessage = DefaultErrorMessage>
     class NotUnmatchedBlockExpression : public Symbol
@@ -507,7 +534,7 @@
         }
     };
 
-    // Any sequence of characters (including zero) except the specified literal
+    // Matches any sequence of characters (including zero) except the specified literal
     template<char *literalString, FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::notLiteralExpression, char *staticErrorMessage = DefaultErrorMessage>
     class NotLiteralExpression : public Symbol
     {
@@ -524,11 +551,9 @@
             shared_ptr<ThisType> symbol = shared_ptr<ThisType>(new ThisType());
             vector<shared_ptr<Symbol>> partialLiteral;
 
-            // Each stream of characters is a different transaction.  
+            // Each stream of characters is a different transaction  
             // We commit the transaction and start a new one if 
-                // we see a new beginning of the literal
-                // we don't successfully complete the literal
-            // if we complete the transaction, we rollback and exit
+            // we see a new beginning of the literal
             reader.Begin();
             while(reader.Peek(streamSymbol) != SymbolID::eof)
             {
@@ -595,7 +620,9 @@
         }
     };
 
-    // This is not designed to be used directly, use the wrapper classes instead
+	// Matches the SymbolType rule at least N and at most M times.
+    // This is not designed to be used directly, use the wrapper classes instead:
+	// NOrMoreExpression, OneOrMoreExpression, ZeroOrMoreExpression
     template<class SymbolType, int AtLeast, int AtMost, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::atLeastAndAtMostExpression, char *staticErrorMessage = DefaultErrorMessage>
     class AtLeastAndAtMostExpression : public Symbol
     {
@@ -648,7 +675,8 @@
         }
     };
 
-    template<class SymbolType, int N, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::nOrMoreExpression, char *staticErrorMessage = DefaultErrorMessage>
+	// Matches the SymbolType rule at least N times.
+	template<class SymbolType, int N, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::nOrMoreExpression, char *staticErrorMessage = DefaultErrorMessage>
     class NOrMoreExpression : public AtLeastAndAtMostExpression<SymbolType, N, INT_MAX, flatten, ID, staticErrorMessage>
     {
     public:
@@ -658,6 +686,7 @@
         }
     };
 
+	// Matches the SymbolType rule at least 1 times.
     template<class SymbolType, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::oneOrMoreExpression, char *staticErrorMessage = DefaultErrorMessage>
     class OneOrMoreExpression : public AtLeastAndAtMostExpression<SymbolType, 1, INT_MAX, flatten, ID, staticErrorMessage>
     {
@@ -668,6 +697,7 @@
         }
     };
 
+	// Matches the SymbolType rule zero or more times.
     template<class SymbolType, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::zeroOrMoreExpression, char *staticErrorMessage = DefaultErrorMessage>
     class ZeroOrMoreExpression : public AtLeastAndAtMostExpression<SymbolType, 0, INT_MAX, flatten, ID, staticErrorMessage>
     {
@@ -678,7 +708,8 @@
         }
     };
 
-    // If the SymbolType node succeeds, throws it away and replaces with replacementString
+	// Used when two things need to parse to the same symbol:
+    // If the SymbolType node matches, throws it away and replaces with the SymbolID specified that outputs replacementString as its text
     template<class SymbolType, char *replacementString, FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::optionalExpression, char *staticErrorMessage = DefaultErrorMessage>
     class ReplaceExpression : public Symbol
     {
@@ -714,8 +745,8 @@
         }
     };
 
-    // Always succeeds and if the SymbolType symbol also succeeds adds as a child
-    // Useful for creating no
+	// If SymbolType succeeds, it is added as a child of this Symbol.
+	// Used when a structure is expected that doesn't naturally fall out of the text
     template<class SymbolType, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::optionalExpression, char *staticErrorMessage = DefaultErrorMessage>
     class GroupExpression : public Symbol
     {
@@ -747,6 +778,7 @@
         }
     };
 
+	// Doesn't fail if SymbolType fails
     template<class SymbolType, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::optionalExpression, char *staticErrorMessage = DefaultErrorMessage>
     class OptionalExpression : public AtLeastAndAtMostExpression<SymbolType, 0, 1, flatten, ID, staticErrorMessage>
     {
@@ -757,6 +789,20 @@
         }
     };
 
+	// Used as a bogus default argument for the Args class below
+	class EmptyClass
+	{
+	public:
+		static shared_ptr<Symbol> TryParse(shared_ptr<Lexer> lexer, const string& errorMessage)
+		{
+			StaticFailFastAssert(false);
+			return nullptr;
+		}
+	};
+
+	// Args is a Template hack that allows for adding a variable number of arguments that are symbols.
+	// It is used by rules like And and Or that accept many rules. They assume the class you pass in is of
+	// type "Args"
     template<class Symbol1 = EmptyClass, class Symbol2 = EmptyClass, class Symbol3 = EmptyClass, class Symbol4 = EmptyClass, class Symbol5 = EmptyClass,
         class Symbol6 = EmptyClass, class Symbol7 = EmptyClass, class Symbol8 = EmptyClass, class Symbol9 = EmptyClass, class Symbol10 = EmptyClass,
         class Symbol11 = EmptyClass, class Symbol12 = EmptyClass, class Symbol13 = EmptyClass, class Symbol14 = EmptyClass, class Symbol15 = EmptyClass,
@@ -862,6 +908,8 @@
         }
     };
 
+	// Requires that first argument be an Args class, which allows multiple rules to be children.
+	// Matches (and stops processing) as soon as one of them succeeds.  Fails otherwise
     template<class Args, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::orExpression, char *staticErrorMessage = DefaultErrorMessage>
     class OrExpression : public Symbol
     {
@@ -899,6 +947,8 @@
         }
     };
 
+	// Requires that first argument be an Args class, which allows multiple rules to be children.
+	// Fails (and stops processing) as soon as one of the symbols in Args fails.  Succeeds otherwise
     template<class Args, FlattenType flatten = FlattenType::Flatten, unsigned short ID = SymbolID::andExpression, char *staticErrorMessage = DefaultErrorMessage>
     class AndExpression : public Symbol
     {
@@ -939,28 +989,20 @@
         }
     };
 
-    typedef CharacterSetSymbol<WhitespaceChars> WhitespaceCharSymbol;
-
+	// Matches any series of charactrs in WhitespaceCharSymbol
     template<FlattenType flatten = FlattenType::Delete, unsigned short ID = SymbolID::whitespace, char *staticErrorMessage = DefaultErrorMessage>
     class WhitespaceSymbol : public AtLeastAndAtMostExpression<WhitespaceCharSymbol, 1, INT_MAX, flatten, ID, staticErrorMessage>
     {
     };
 
+	// Same as WhitespaceSymbol but doesn't fail if there aren't any
     template<FlattenType flatten = FlattenType::Delete, unsigned short ID = SymbolID::whitespace, char *staticErrorMessage = DefaultErrorMessage>
     class OptionalWhitespaceSymbol : public AtLeastAndAtMostExpression<WhitespaceCharSymbol, 0, INT_MAX, flatten, ID, staticErrorMessage>
     {
     };
 
-    class EmptyClass
-    {
-    public:
-        static shared_ptr<Symbol> TryParse(shared_ptr<Lexer> lexer, const string &errorMessage)
-        {
-            StaticFailFastAssert(false);
-            return nullptr;
-        }
-    };
-
+	// Matches text that is *not* the symbol specified by SymbolType 
+	// AND don't consume anything 
     template<class SymbolType, FlattenType flatten = FlattenType::Delete, unsigned short ID = SymbolID::notPeekExpression, char *staticErrorMessage = DefaultErrorMessage>
     class NotPeekExpression : public Symbol
     {
@@ -996,6 +1038,8 @@
         }
     };
 
+	// Matches text that *is* the symbol specified by SymbolType 
+	// BUT doesn't consume it 
     template<class SymbolType, FlattenType flatten = FlattenType::Delete, unsigned short ID = SymbolID::peekExpression, char *staticErrorMessage = DefaultErrorMessage>
     class PeekExpression : public Symbol
     {
@@ -1031,7 +1075,7 @@
         }
     };
 
-    
+    // Matches an integer, including those with a + or - in front
     template<FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::integerExpression, char *staticErrorMessage = DefaultErrorMessage>
     class Integer : public 
         AndExpression<Args
@@ -1049,7 +1093,7 @@
     {
     };
 
-    // Float
+	// Matches a float with an optional - in front
     // [-] Integer "." Integer
     template<FlattenType flatten = FlattenType::None, unsigned short ID = SymbolID::floatExpression, char *staticErrorMessage = DefaultErrorMessage>
     class Float : public

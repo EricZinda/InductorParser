@@ -9,34 +9,19 @@
 #include <vector>
 using namespace std;
 
+/*
+Designed as a lightweight tracing mechanism that allows for outputting different levels of detail (TraceDetail)
+And different kinds of traces (SystemTraceType) for debugging purposes
+*/
+
 // Types < Custom are reserved for the system
 // This is a bitfield
 #define SYSTEM_TRACE_TYPE(item) \
     item(SystemTraceType, None, 0) \
     item(SystemTraceType, System, 1) \
-    item(SystemTraceType, Graphics, 2) \
-    item(SystemTraceType, Input, 4) \
-    item(SystemTraceType, BlockStore, 8) \
-    item(SystemTraceType, Abilities, 16) \
     item(SystemTraceType, Parsing, 32) \
-    item(SystemTraceType, ScreenMgmt, 64) \
-    item(SystemTraceType, Networking, 128) \
-    item(SystemTraceType, Audio, 256) \
     item(SystemTraceType, Custom, 0x00000800) \
-    item(SystemTraceType, Engine, (uint64_t) SystemTraceType::Custom * 2) \
-    item(SystemTraceType, UserInterface, (uint64_t) SystemTraceType::Custom * 4) \
     item(SystemTraceType, HTML, (uint64_t)SystemTraceType::Custom * 8) \
-    item(SystemTraceType, HTMLLayout, (uint64_t)SystemTraceType::Custom * 16) \
-    item(SystemTraceType, InternalTest, (uint64_t)SystemTraceType::Custom * 32) \
-    item(SystemTraceType, Animation, (uint64_t)SystemTraceType::Custom * 64) \
-    item(SystemTraceType, Market, (uint64_t)SystemTraceType::Custom * 128) \
-    item(SystemTraceType, Help, (uint64_t)SystemTraceType::Custom * 256) \
-    item(SystemTraceType, Memory, (uint64_t)SystemTraceType::Custom * 512) \
-    item(SystemTraceType, Gestures, (uint64_t)SystemTraceType::Custom * 1024) \
-    item(SystemTraceType, EngineDisplay, (uint64_t)SystemTraceType::Custom * 2048) \
-    item(SystemTraceType, Solver, (uint64_t)SystemTraceType::Custom * 4096) \
-    item(SystemTraceType, Unifier, (uint64_t)SystemTraceType::Custom * 8192) \
-    item(SystemTraceType, Planner, (uint64_t)SystemTraceType::Custom * 16384) \
     item(SystemTraceType, All, 0x0FFFFFFF)
 DECLARE_ENUM(SystemTraceType,SYSTEM_TRACE_TYPE)
 

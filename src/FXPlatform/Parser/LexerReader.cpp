@@ -18,7 +18,7 @@ LexerReader::~LexerReader()
     }
 };
 
-// Outer transactions cant commit or abort until nested ones complete because
+// Outer transactions can't commit or abort until nested ones complete because
 // otherwise we will move the file pointer out from under it
 // Really it is just a debugging guarantee since the calling code should never do this
 void LexerReader::Abort()

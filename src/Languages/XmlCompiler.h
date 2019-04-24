@@ -16,6 +16,14 @@ using namespace std;
 using namespace FXPlat;
 using namespace Html;
 
+/*
+	The XML Compiler is using the same parser as the HTML Compiler as an approximation
+	since the HTML compiler is strict about start and end tags, etc.
+
+	It is using a very simple form of XML, doesn't recognize many of the advanced features, etc.
+	Should be able to parse the simple examples from here: https://www.w3schools.com/xml/xml_examples.asp
+*/
+
 class XmlNode
 {
 public:

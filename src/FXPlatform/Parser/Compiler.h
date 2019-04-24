@@ -3,7 +3,6 @@
 #include "Parser.h"
 #include <string>
 
-
 namespace FXPlat
 {
     class Symbol;
@@ -29,10 +28,11 @@ namespace FXPlat
         Property(public, int, line);
     };
 
+	// Base class for a compiler that uses a specific parser
     // Usage:
     //  1. create a class that derives from Compiler<baserule> where baserule is a rule that parses an entire document
     //  2. add members to that class which contain whatever you are compiling into.  I.e. whatever the document is supposed to become
-    //  3. override virtual bool ProcessAst(shared_ptr<CompileResultType> ast) and turn the input ast into whatever it becomes
+    //  3. override virtual bool ProcessAst(shared_ptr<CompileResultType> ast) and turn the symbols created by the rules into whatever they become
     template<class parser>
     class Compiler
     {
@@ -83,7 +83,6 @@ namespace FXPlat
             return ProcessAst(result);
         }
 
-        
         static shared_ptr<Symbol> GetChild(shared_ptr<Symbol> symbol, int level0Index, int ID0)
         {
             if(symbol->children().size() >= (size_t) level0Index + 1)
@@ -145,7 +144,6 @@ namespace FXPlat
             if(result != nullptr)
             {
                 // No Errors, flatten now
-                //string foo = ParserDebug::PrintTree(result, 0);
 
                 flattened = shared_ptr<vector<shared_ptr<Symbol>>>(new vector<shared_ptr<Symbol>>());
                 StartTimingOnly(Compiler_Compile_Flatten, SystemTraceType::HTML, TraceDetail::Detailed);
@@ -164,6 +162,7 @@ namespace FXPlat
             }
         }
 
+		// This must be overridden to actually process the tree that got parsed
         virtual bool ProcessAst(shared_ptr<CompileResultType> ast) = 0;
     };
 }

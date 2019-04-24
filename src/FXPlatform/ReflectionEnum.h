@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 /*
- http://stackoverflow.com/questions/147267/easy-way-to-use-variables-of-enum-types-as-string-in-c#202511
+ Credit to: http://stackoverflow.com/questions/147267/easy-way-to-use-variables-of-enum-types-as-string-in-c#202511
  
  Create Enum:
  
@@ -107,7 +107,6 @@ private:\
     virtual void bogus() { } \
 }; \
 extern EnumType##Type EnumType##Object;
-
 
 // expansion macro for enum value definition
 #define ENUM_VALUE(type, name, assign) name = assign,

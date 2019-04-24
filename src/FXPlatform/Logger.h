@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "NanoTrace.h"
 
+// Outputs a Debug message to whatever is appropriate
 void DebugLogMessage(int traceType, const TraceDetail levelOfDetail, const char *message);
 
 

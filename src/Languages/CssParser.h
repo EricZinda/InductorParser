@@ -2,8 +2,10 @@
 #include "FXPlatform/Parser/Parser.h"
 using namespace FXPlat;
 
+// Background used for this example CSS parser
 // http://www.w3.org/TR/CSS21/syndata.html#strings
 // http://www.w3.org/TR/css3-syntax/#syntax-description
+
 namespace Html
 {
     // Tokens
@@ -32,6 +34,8 @@ namespace Html
     class CssSymbolID
     {
     public:
+		// Start IDs after CustomSymbolStart so they don't conflict with
+		// built in IDs
         SymbolDef(cssBlockComment, CustomSymbolStart + 0);
         SymbolDef(identifier, CustomSymbolStart + 1);
         SymbolDef(classSelector, CustomSymbolStart + 2);
@@ -58,9 +62,7 @@ namespace Html
         SymbolDef(inlineStyleSelector, CustomSymbolStart + 24);
     };
 
-#define CssSymbolIDEnd CustomSymbolStart + 1000
-
-    // /* comment */ selector { declaration declaration }
+	#define CssSymbolIDEnd CustomSymbolStart + 1000
 
     // Block Comment
     // /* comment */
@@ -91,8 +93,11 @@ namespace Html
     };
 
     //  String
-    // Strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, unless escaped (e.g., as '\"' or as '\22'). Analogously for single quotes (e.g., "\'" or "\27"). 
-    // A string cannot directly contain a newline. To include a newline in a string, use an escape representing the line feed character in ISO-10646 (U+000A), such as "\A" or "\00000a". This character represents the generic notion of "newline" in CSS. See the 'content' property for an example. 
+    // Strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, unless escaped (e.g., as '\"' or as '\22'). 
+	// Analogously for single quotes (e.g., "\'" or "\27"). 
+    // A string cannot directly contain a newline. To include a newline in a string, use an escape representing the line feed character in ISO-10646 (U+000A), 
+	// such as "\A" or "\00000a". This character represents the generic 
+	// notion of "newline" in CSS. See the 'content' property for an example. 
     // It is possible to break strings over several lines, for aesthetic or other reasons, but in such a case the newline itself has to be escaped with a backslash (\). For instance, the following two selectors are exactly the same:
     // CssDoubleQuoteString := " ( \" | \CRLF | AnyCharacterBut(") )* "\"" 
     typedef AndExpression<Args
@@ -114,7 +119,7 @@ namespace Html
             CharacterSymbol<DoubleQuoteString>
         >, FlattenType::None, CssSymbolID::cssValueString> CssDoubleQuoteString;
 
-        typedef AndExpression<Args
+	typedef AndExpression<Args
         <
             CharacterSymbol<SingleQuoteString>,
             ZeroOrMoreExpression
@@ -133,7 +138,7 @@ namespace Html
             CharacterSymbol<SingleQuoteString>
         >, FlattenType::None, CssSymbolID::cssValueString> CssSingleQuoteString;
 
-        typedef OrExpression<Args
+	typedef OrExpression<Args
             <
                 CssSingleQuoteString,
                 CssDoubleQuoteString
@@ -237,7 +242,6 @@ namespace Html
     // A sequence of simple selectors is a chain of simple selectors that are not separated by a combinator. It always begins with a type selector or a 
     //    universal selector. No other type selector or universal selector is allowed in the sequence. 
     // A simple selector is either a type selector, universal selector, attribute selector, class selector, ID selector, or pseudo-class. 
-
     // Selector
     // SimpleSelectorSequence (Combinator SimpleSelectorSequence)*
     class CssSelectorRule : public 

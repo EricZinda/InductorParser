@@ -32,6 +32,7 @@ bool Lexer::Eof()
     return Peek()->symbolID() == SymbolID::eof; 
 }
 
+// Used to report where an error occurred
 void Lexer::GetLineAndColumn(int charPosition, shared_ptr<istream> stream, int &lineCount, int &columnCount, string *lineString)
 {
     if(!stream->good())
