@@ -2,9 +2,6 @@
 #include <stdexcept>
 #include <sstream>
 
-std::string GetUniqueDeviceID();
-uint16_t GetBuild();
-
 int ReplaceAll(std::string& str, const std::string& from, const std::string& to);
 
 template<typename Target, typename Source>

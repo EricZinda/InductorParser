@@ -1,10 +1,4 @@
 target_sources(parser
     PRIVATE
-    	Directory_iOS.mm
-    	FileStream_iOS.mm
     	Logger_iOS.mm
-    	Stopwatch_iOS.cpp
-    	StringHelpers_iOS.cpp
-    	TraceError_iOS.cpp
-    	Utilities_iOS.mm
 )

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cctype>
-#include "FXPlatform/Directory.h"
 #include "FXPlatform/Parser/Compiler.h"
 #include "FXPlatform/Parser/ParserDebug.h"
 #include "Languages/XmlCompiler.h"
@@ -41,8 +40,7 @@ int main (int argc, char *argv[])
 	else
 	{
 	    string language = string(argv[1]);
-	    Directory path = Directory("./");
-	    string targetFileAndPath = Directory::AddPathIfNoPath(string(argv[2]), path);
+	    string targetFileAndPath = string(argv[2]);
 
 	    if(language == "xml")
 	    {

@@ -1,24 +1,5 @@
 #include "Utilities.h"
 using namespace std;
- 
-
-string testUniqueDeviceID;
-void DebugSetUniqueDeviceID(string value)
-{
-    testUniqueDeviceID = value;
-}
-
-string GetUniqueDeviceID()
-{
-    if(testUniqueDeviceID.size() > 0)
-    {
-        return testUniqueDeviceID;
-    }
-    else
-    {
-        return "TODO FOR MAC";
-    }
-}
 
 int ReplaceAll(std::string& str, const std::string& from, const std::string& to)
 {

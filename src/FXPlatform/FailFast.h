@@ -22,5 +22,5 @@ void failfastThis_uncaught_exception_handler(void *thisPtr, bool expression, con
 void failfastThis_uncaught_exception_handler(void *thisPtr, bool expression, const char *file, long line);
 
 void uncaught_exception_handler (void);
-// Done so this is executed when globals are initialized
+// Done this is executed when globals are initialized
 extern std::terminate_handler previousHandler;

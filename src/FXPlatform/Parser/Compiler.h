@@ -1,6 +1,5 @@
 #pragma once
 #include <fstream>
-#include "FXPlatform/Directory.h"
 #include "Parser.h"
 #include <string>
 
@@ -44,7 +43,7 @@ namespace FXPlat
         {
             shared_ptr<ifstream> stream = shared_ptr<ifstream>(new ifstream());
             StartTimingOnly(Compiler_CompileDocument_LoadFile, SystemTraceType::HTML, TraceDetail::Detailed);
-            stream->open(Directory::AddPathIfNoPath(fullPath, *Directory::InstallationFolder()), ios::binary);
+            stream->open(fullPath, ios::binary);
             EndTimingOnly(Compiler_CompileDocument_LoadFile, SystemTraceType::HTML, TraceDetail::Detailed);
             if(stream->good())
             {
