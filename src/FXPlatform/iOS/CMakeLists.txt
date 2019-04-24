@@ -4,6 +4,7 @@ target_sources(parser
     	FileStream_iOS.mm
     	Logger_iOS.mm
     	Stopwatch_iOS.cpp
-	TraceError_iOS.cpp
-	Utilities_iOS.mm
+    	StringHelpers_iOS.cpp
+    	TraceError_iOS.cpp
+    	Utilities_iOS.mm
 )

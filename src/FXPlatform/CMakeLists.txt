@@ -4,10 +4,12 @@ target_sources(parser
     	FailFast.h
     	FailFast.cpp
     	FileStream.h
+        Logger.h
     	NanoTrace.h
     	NanoTrace.cpp
     	ReflectionEnum.h
-	Stopwatch.h
+        Stopwatch.h
+        StringHelpers.h
     	TraceError.h
     	Utilities.h
     	Utilities.cpp
