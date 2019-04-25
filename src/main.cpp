@@ -27,7 +27,8 @@ int main (int argc, char *argv[])
 	if(argc != 3)
 	{
 		  fprintf(stdout, 
-		  	"MacGuffin Parser example. Parses several types of documents\r\n"
+		  	"IndParse Parser example from https://github.com/EricZinda/InductorParser. \r\n"
+		  	"Parses several types of documents\r\n"
 		  	"and outputs the string representation of their parsed data structure to\r\n"
 		  	"prove it worked.\r\n\r\n"
 		  	"Command line arguments: gparse [language] [file] \r\n"
