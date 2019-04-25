@@ -31,7 +31,7 @@ Directory Structure
 - /FXPlatform: 		Contains some general purpose code for tracing, asserts, strings, etc
 - /FXPlatform/Parser: The Inductor Parser code
 - /FXPlatform/iOS: 	Code specific to iOS and Mac
-- /FXPlatform/Win: 	Code specific to iOS and Mac
+- /FXPlatform/Win: 	Code specific to Windows
 - /Languages:			Example parsers for XML, HTML, CSS. These are the production grammars used in Exospecies. They are simple, take shortcuts, etc.  Treat them as *examples*.
 
 Getting Started
