@@ -3,7 +3,7 @@ Inductor Parser
 ===============
 The Inductor Parser is a simple-to-use C++ Template-based parser.  Use it and enjoy!
 
-For more information on how it is used in the [Exospecies](www.exospecies.com) game, visit the [Exospecies Blog](www.exospecies.com/blog).
+For more information on how it is used in the [Exospecies](https://www.exospecies.com) game, visit the [Exospecies Blog](https://www.exospecies.com/blog).
 
 To Build
 --------
