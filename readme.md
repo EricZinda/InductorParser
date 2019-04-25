@@ -1,4 +1,5 @@
 
+
 Inductor Parser
 ===============
 The Inductor Parser is a simple-to-use C++ Template-based parser.  It is small and easy to understand, debug and extend.
@@ -27,11 +28,11 @@ Directory Structure
 -------------------
 99.99% of the code for the parser is platform agnostic (or at least should be). It has been built and tested on Windows, Mac and iOS. The platform specific code is located in the iOS and Win directorys and is currently only a single function for debug logging.
 
-/FXPlatform: 		Contains some general purpose code for tracing, asserts, strings, etc
-/FXPlatform/Parser: The Inductor Parser code
-/FXPlatform/iOS: 	Code specific to iOS and Mac
-/FXPlatform/Win: 	Code specific to iOS and Mac
-/Languages:			Example parsers for XML, HTML, CSS. These are the production grammars used in Exospecies. They are simple, take shortcuts, etc.  Treat them as *examples*.
+- /FXPlatform: 		Contains some general purpose code for tracing, asserts, strings, etc
+- /FXPlatform/Parser: The Inductor Parser code
+- /FXPlatform/iOS: 	Code specific to iOS and Mac
+- /FXPlatform/Win: 	Code specific to iOS and Mac
+- /Languages:			Example parsers for XML, HTML, CSS. These are the production grammars used in Exospecies. They are simple, take shortcuts, etc.  Treat them as *examples*.
 
 Getting Started
 -------------------
