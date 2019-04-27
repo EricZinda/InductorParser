@@ -92,7 +92,7 @@ namespace Html
     {
     };
 
-    //  String
+    // String
     // Strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, unless escaped (e.g., as '\"' or as '\22'). 
 	// Analogously for single quotes (e.g., "\'" or "\27"). 
     // A string cannot directly contain a newline. To include a newline in a string, use an escape representing the line feed character in ISO-10646 (U+000A), 
