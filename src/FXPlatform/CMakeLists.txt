@@ -2,10 +2,11 @@ target_sources(parser
     PRIVATE
     	FailFast.h
     	FailFast.cpp
-        	Logger.h
+        Logger.h
     	NanoTrace.h
     	NanoTrace.cpp
     	ReflectionEnum.h
+    	SystemTraceType.h
     	Utilities.h
     	Utilities.cpp
 )

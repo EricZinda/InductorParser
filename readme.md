@@ -21,6 +21,7 @@ indparse is designed to be built with [CMake](https://cmake.org) like this:
 4. CMake can build different types of projects using "generators".  Run `cmake -help` to get a list of generators on your system:
 	unix and win: `cmake -help`
 4. Pick the generator that will create the type of project you want and use the `-G` option to choose it. Here are the ones that have been tested:
+	XCode: 					`cmake -G "Xcode" ../src`
 	mac make file: 			`cmake -G "Unix Makefiles" ../src`
 	Windows Visual Studio: 	`cmake ../src`
 5. Then actually do the build using this command which magically builds whatever you choose on the command line: 
