@@ -6,6 +6,9 @@ In building [Exospecies](www.exospecies.com) I ended up having a lot of differen
 
 This blog post will describe how to use it.
 
+## Performance
+Note that the performance of this project is *HUGELY* dependent on whether you have built for retail or debug.  Debug builds have error checking which does *major* damage to performance.  Make sure you run in retail if you are evaluating the performance!
+
 ### Creating a Grammar
 IndParser is called a [PEG Parser](https://en.wikipedia.org/wiki/Parsing_expression_grammar), which is a very simple to understand and implement type of [Recursive Descent Parser](https://en.wikipedia.org/wiki/Recursive_descent_parser). I chose this approach because the way you express your parser rules is very readable and understandable and it is straightforward to implement.
 
