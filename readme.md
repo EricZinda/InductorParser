@@ -4,7 +4,7 @@ Inductor Parser
 ===============
 The Inductor Parser is a simple-to-use C++ Template-based parser.  It is small and easy to understand, debug and extend.
 
-It is used in production in an iPhone strategy game called [Exospecies](https://www.exospecies.com). Visit the [Exospecies Blog](https://www.exospecies.com/blog) for more details.
+It is used in production in an iPhone strategy game called [Exospecies](https://www.exospecies.com). Visit the [Exospecies Blog](https://blog.inductorsoftware.com/blog/) for more details.
 
 Use it and enjoy!
 
