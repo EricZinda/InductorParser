@@ -20,6 +20,6 @@ else()
 endif()
 
 add_subdirectory(FXPlatform/Parser)
-add_subdirectory(Languages)
+add_subdirectory(FXPlatform/Languages)
 
 

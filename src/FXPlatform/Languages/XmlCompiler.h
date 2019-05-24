@@ -10,7 +10,7 @@
 #define __GameLib__XmlCompiler__
 
 #include "FXPlatform/Parser/Compiler.h"
-#include "Languages/HtmlParser.h"
+#include "FXPlatform/Languages/HtmlParser.h"
 #include <map>
 using namespace std;
 using namespace FXPlat;

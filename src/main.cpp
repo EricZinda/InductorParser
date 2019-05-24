@@ -3,7 +3,7 @@
 #include <cctype>
 #include "FXPlatform/Parser/Compiler.h"
 #include "FXPlatform/Parser/ParserDebug.h"
-#include "Languages/XmlCompiler.h"
+#include "FXPlatform/Languages/XmlCompiler.h"
 #include <string>
 
 // Simply parses the document and stores the Symbol tree unprocessed
